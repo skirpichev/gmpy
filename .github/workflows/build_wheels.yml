@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-12, macos-14, windows-2022]
+        os: [windows-2022]
     steps:
       - uses: actions/checkout@v4
       - if: runner.os == 'macOS'
@@ -27,6 +27,7 @@ jobs:
         env:
           CIBW_PRERELEASE_PYTHONS: True
           CIBW_SKIP: pp* *-win32
+          CIBW_BUILD: cp311-*
           CIBW_BEFORE_ALL: bash scripts/cibw_before_all.sh
           CIBW_BEFORE_ALL_WINDOWS: msys2 -c scripts/cibw_before_all.sh
           CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
