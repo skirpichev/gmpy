@@ -146,9 +146,6 @@ GMPy_PyLong_From_MPZ(MPZ_Object *obj, CTXT_Object *context)
     mpz_export(GET_OB_DIGIT(result), &count, -1, sizeof(digit), 0,
                sizeof(digit)*8 - PyLong_SHIFT, obj->z);
 
-    for (size_t i = count; i < size; i++) {
-        GET_OB_DIGIT(result)[i] = 0;
-    }
     _PyLong_SetSignAndDigitCount(result, mpz_sgn(obj->z) < 0, count);
 
     return (PyObject*)result;
