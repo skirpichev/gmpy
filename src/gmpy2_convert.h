@@ -149,8 +149,8 @@ extern "C" {
 #  define GET_OB_DIGIT(obj) ((PyLongObject*)obj)->long_value.ob_digit
 #  define _PyLong_DigitCount(obj) (((PyLongObject*)obj)->long_value.lv_tag >> 3)
 #else
-#  define GET_OB_DIGIT(obj) obj->ob_digit
-#  define _PyLong_DigitCount(obj) (_PyLong_Sign(obj)<0 ? -Py_SIZE(obj):Py_SIZE(obj))
+#  define GET_OB_DIGIT(obj) ((PyLongObject*)obj)->ob_digit
+#  define _PyLong_DigitCount(obj) (_PyLong_Sign((PyLongObject*)obj)<0 ? -Py_SIZE(obj):Py_SIZE(obj))
 #endif
 
 /* Since the macros are used in gmpy2's codebase, these functions are skipped
