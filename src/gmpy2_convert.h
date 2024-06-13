@@ -136,14 +136,18 @@ extern "C" {
 /* Compatibility macros (to work with PyLongObject internals).
  */
 
+static inline void
+_PyLong_FlipSign(PyLongObject *op) {
 #if PY_VERSION_HEX >= 0x030C0000
-#  define TAG_FROM_SIGN_AND_SIZE(is_neg, size) ((is_neg?2:(size==0)) | (((size_t)size) << 3))
-#  define _PyLong_SetSignAndDigitCount(obj, is_neg, size) (obj->long_value.lv_tag = TAG_FROM_SIGN_AND_SIZE(is_neg, size))
+    unsigned int flipped_sign = 2 - (op->long_value.lv_tag & 3);
+    op->long_value.lv_tag &= -8;
+    op->long_value.lv_tag |= flipped_sign;
 #elif PY_VERSION_HEX >= 0x030900A4
-#  define _PyLong_SetSignAndDigitCount(obj, is_neg, size) (Py_SET_SIZE(obj, (is_neg?-1:1)*size))
+    Py_SET_SIZE(op, -(Py_SIZE(op)));
 #else
-#  define _PyLong_SetSignAndDigitCount(obj, is_neg, size) (Py_SIZE(obj) = (is_neg?-1:1)*size)
+    Py_SIZE(op) = -Py_SIZE(op);
 #endif
+}
 
 #if PY_VERSION_HEX >= 0x030C0000
 #  define GET_OB_DIGIT(obj) ((PyLongObject*)obj)->long_value.ob_digit
