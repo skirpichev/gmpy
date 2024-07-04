@@ -19,3 +19,6 @@ def pytest_report_header(config):
 """.format(gmpy2.mp_version(),
            gmpy2.mpfr_version(),
            gmpy2.mpc_version()))
+    import sys
+    print(sys.int_info)
+    print(sys.byteorder)
