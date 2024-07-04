@@ -44,29 +44,30 @@
 #define PyLong_ReleaseExport PyUnstable_Long_ReleaseExport
 #define PyLong_Import PyUnstable_Long_Import
 #define PyLong_LAYOUT PyUnstable_Long_LAYOUT
+#define PyLong_DigitArray PyUnstable_Long_DigitArray
 
 /* To support creation of temporary mpz objects. */
 static void
 mpz_set_PyLong(mpz_t z, PyObject *obj)
 {
-    PyUnstable_LongExport layout;
+    PyLong_DigitArray long_export;
 
-    PyLong_Export(obj, &layout);
-    if (layout.ndigits == 1) {
-        mpz_set_si(z, layout.digits[0]);
+    PyLong_Export(obj, &long_export);
+    if (long_export.ndigits == 1) {
+        mpz_set_si(z, long_export.digits[0]);
     }
     else {
-        mpz_import(z, layout.ndigits,
-                   PyLong_LAYOUT.array_endian ? 1:-1,
+        mpz_import(z, long_export.ndigits,
+                   PyLong_LAYOUT.array_endian,
                    PyLong_LAYOUT.digit_size,
-                   PyLong_LAYOUT.word_endian ? -1:1,
+                   PyLong_LAYOUT.word_endian,
                    PyLong_LAYOUT.digit_size*8 - PyLong_LAYOUT.bits_per_digit,
-                   layout.digits);
+                   long_export.digits);
     }
-    if (layout.negative) {
+    if (long_export.negative) {
         mpz_neg(z, z);
     }
-    PyLong_ReleaseExport(&layout);
+    PyLong_ReleaseExport(&long_export);
 }
 
 static MPZ_Object *
@@ -138,9 +139,9 @@ GMPy_PyLong_From_MPZ(MPZ_Object *obj, CTXT_Object *context)
     Py_digit *digits = PyMem_Malloc(PyLong_LAYOUT.digit_size*size);
 
     mpz_export(digits, NULL,
-               PyLong_LAYOUT.array_endian ? 1:-1,
+               PyLong_LAYOUT.array_endian,
                PyLong_LAYOUT.digit_size,
-               PyLong_LAYOUT.word_endian ? -1:1,
+               PyLong_LAYOUT.word_endian,
                PyLong_LAYOUT.digit_size*8 - PyLong_LAYOUT.bits_per_digit,
                obj->z);
 
