@@ -1212,7 +1212,7 @@ static inline int PyTime_PerfCounter(PyTime_t *result)
 typedef digit Py_digit;
 
 
-typedef struct PyUnstable_LongLayout {
+typedef struct PyLongLayout {
     // Bits per digit
     uint8_t bits_per_digit;
 
@@ -1228,10 +1228,10 @@ typedef struct PyUnstable_LongLayout {
     // - 1 for most significant byte first (big endian)
     // - -1 for least significant first (little endian)
     int8_t array_endian;
-} PyUnstable_LongLayout;
+} PyLongLayout;
 
 
-const PyUnstable_LongLayout PyUnstable_Long_LAYOUT = {
+const PyLongLayout PyLong_LAYOUT = {
     .bits_per_digit = PyLong_SHIFT,
     .word_endian = PY_LITTLE_ENDIAN ? -1 : 1,
     .array_endian = -1,  // least significant first
@@ -1239,12 +1239,12 @@ const PyUnstable_LongLayout PyUnstable_Long_LAYOUT = {
 };
 
 
-typedef struct PyUnstable_Long_DigitArray {
+typedef struct PyLong_DigitArray {
     PyLongObject *obj;
     int negative;
     size_t ndigits;
     Py_digit *digits;
-} PyUnstable_Long_DigitArray;
+} PyLong_DigitArray;
 
 
 #if PY_VERSION_HEX >= 0x030C0000
@@ -1267,7 +1267,7 @@ typedef struct PyUnstable_Long_DigitArray {
 
 
 static inline PyObject*
-PyUnstable_Long_Import(int negative, size_t ndigits, Py_digit *digits)
+PyLong_Import(int negative, size_t ndigits, Py_digit *digits)
 {
     if (ndigits <= 1) {
         return PyLong_FromLong((negative?-1:1)*digits[0]);
@@ -1284,7 +1284,7 @@ PyUnstable_Long_Import(int negative, size_t ndigits, Py_digit *digits)
 
 
 static inline int
-PyUnstable_Long_Export(PyObject *obj, PyUnstable_Long_DigitArray *array)
+PyLong_Export(PyObject *obj, PyLong_DigitArray *array)
 {
     if (!PyLong_Check(obj)) {
         PyErr_Format(PyExc_TypeError, "expect int, got %T", obj);
@@ -1304,7 +1304,7 @@ PyUnstable_Long_Export(PyObject *obj, PyUnstable_Long_DigitArray *array)
 
 
 static inline void
-PyUnstable_Long_ReleaseExport(PyUnstable_Long_DigitArray *array)
+PyLong_ReleaseExport(PyLong_DigitArray *array)
 {
     Py_CLEAR(array->obj);
     array->negative = 0;

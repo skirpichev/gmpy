@@ -40,12 +40,6 @@
  * Conversion between native Python objects and MPZ.                        *
  * ======================================================================== */
 
-#define PyLong_Export PyUnstable_Long_Export
-#define PyLong_ReleaseExport PyUnstable_Long_ReleaseExport
-#define PyLong_Import PyUnstable_Long_Import
-#define PyLong_LAYOUT PyUnstable_Long_LAYOUT
-#define PyLong_DigitArray PyUnstable_Long_DigitArray
-
 /* To support creation of temporary mpz objects. */
 static void
 mpz_set_PyLong(mpz_t z, PyObject *obj)
