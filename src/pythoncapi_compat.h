@@ -1248,12 +1248,13 @@ typedef struct PyUnstable_Long_DigitArray {
 
 
 #if PY_VERSION_HEX >= 0x030C0000
-#  define TAG_FROM_SIGN_AND_SIZE(is_neg, size) ((is_neg?2:(size==0)) | (((size_t)size) << 3))
-#  define _PyLong_SetSignAndDigitCount(obj, is_neg, size) (obj->long_value.lv_tag = TAG_FROM_SIGN_AND_SIZE(is_neg, size))
+#  define NON_SIZE_BITS 3
+#  define TAG_FROM_SIGN_AND_SIZE(sign, size) ((1 - (sign)) | ((size) << NON_SIZE_BITS))
+#  define _PyLong_SetSignAndDigitCount(obj, sign, size) (obj->long_value.lv_tag = TAG_FROM_SIGN_AND_SIZE(sign, size))
 #elif PY_VERSION_HEX >= 0x030900A4
-#  define _PyLong_SetSignAndDigitCount(obj, is_neg, size) (Py_SET_SIZE(obj, (is_neg?-1:1)*size))
+#  define _PyLong_SetSignAndDigitCount(obj, sign, size) (Py_SET_SIZE(obj, sign*size))
 #else
-#  define _PyLong_SetSignAndDigitCount(obj, is_neg, size) (Py_SIZE(obj) = (is_neg?-1:1)*size)
+#  define _PyLong_SetSignAndDigitCount(obj, sign, size) (Py_SIZE(obj) = sign*size)
 #endif
 
 #if PY_VERSION_HEX >= 0x030C0000
@@ -1276,7 +1277,7 @@ PyUnstable_Long_Import(int negative, size_t ndigits, Py_digit *digits)
         PyErr_NoMemory();
         return NULL;
     }
-    _PyLong_SetSignAndDigitCount(result, negative, ndigits);
+    _PyLong_SetSignAndDigitCount(result, negative?-1:1, ndigits);
     memcpy(GET_OB_DIGIT(result), digits, ndigits * sizeof(digit));
     return (PyObject*)result;
 }

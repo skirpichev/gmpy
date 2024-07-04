@@ -50,7 +50,7 @@
 static void
 mpz_set_PyLong(mpz_t z, PyObject *obj)
 {
-    PyLong_DigitArray long_export;
+    static PyLong_DigitArray long_export;
 
     PyLong_Export(obj, &long_export);
     if (long_export.ndigits == 1) {
