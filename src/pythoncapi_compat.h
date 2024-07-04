@@ -1265,27 +1265,20 @@ typedef struct PyUnstable_Long_DigitArray {
 #endif
 
 
-static inline PyLongObject *
-_PyLong_FromDigits(int negative, Py_ssize_t digit_count, digit *digits)
+static inline PyObject*
+PyUnstable_Long_Import(int negative, size_t ndigits, Py_digit *digits)
 {
-    if (digit_count <= 1) {
-        return (PyLongObject *)PyLong_FromLong((negative?-1:1)*digits[0]);
+    if (ndigits <= 1) {
+        return PyLong_FromLong((negative?-1:1)*digits[0]);
     }
-    PyLongObject *result = _PyLong_New(digit_count);
+    PyLongObject *result = _PyLong_New(ndigits);
     if (result == NULL) {
         PyErr_NoMemory();
         return NULL;
     }
-    _PyLong_SetSignAndDigitCount(result, negative?-1:1, digit_count);
-    memcpy(GET_OB_DIGIT(result), digits, digit_count * sizeof(digit));
-    return result;
-}
-
-
-static inline PyObject*
-PyUnstable_Long_Import(int negative, size_t ndigits, Py_digit *digits)
-{
-    return (PyObject*)_PyLong_FromDigits(negative, ndigits, digits);
+    _PyLong_SetSignAndDigitCount(result, negative?-1:1, ndigits);
+    memcpy(GET_OB_DIGIT(result), digits, ndigits * sizeof(digit));
+    return (PyObject*)result;
 }
 
 
