@@ -40,11 +40,18 @@
  * Conversion between native Python objects and MPZ.                        *
  * ======================================================================== */
 
+#define PyLong_Export PyUnstable_Long_Export
+#define PyLong_ReleaseExport PyUnstable_Long_ReleaseExport
+#define PyLong_Import PyUnstable_Long_Import
+#define PyLong_ReleaseImport PyUnstable_Long_ReleaseImport
+#define PyLong_LAYOUT PyUnstable_Long_LAYOUT
+#define PyLong_DigitArray PyUnstable_Long_DigitArray
+
 /* To support creation of temporary mpz objects. */
 static void
 mpz_set_PyLong(mpz_t z, PyObject *obj)
 {
-    PyLongDigitsArray long_export;
+    PyLong_DigitArray long_export;
 
     PyLong_Export(obj, &long_export);
     if (long_export.ndigits == 1) {
@@ -130,7 +137,7 @@ GMPy_PyLong_From_MPZ(MPZ_Object *obj, CTXT_Object *context)
 
     size_t size = (mpz_sizeinbase(obj->z, 2) +
                    PyLong_LAYOUT.bits_per_digit - 1) / PyLong_LAYOUT.bits_per_digit;
-    PyLongDigitsArray long_import;
+    PyLong_DigitArray long_import;
 
     if (PyLong_Import(mpz_sgn(obj->z) < 0, size, &long_import) == -1) {
         /* LCOV_EXCL_START */
