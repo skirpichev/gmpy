@@ -1208,6 +1208,117 @@ static inline int PyTime_PerfCounter(PyTime_t *result)
 #  define PyHASH_IMAG _PyHASH_IMAG
 #endif
 
+#if PY_VERSION_HEX < 0x030E00A2
+typedef digit Py_digit;
+
+
+typedef struct PyUnstable_LongLayout {
+    // Bits per digit
+    uint8_t bits_per_digit;
+
+    // Digit size in bytes: sizeof(digit)
+    uint8_t digit_size;
+
+    // Word endian:
+    // - 1 for most significant byte first (big endian)
+    // - -1 for least significant first (little endian)
+    int8_t word_endian;
+
+    // Array endian:
+    // - 1 for most significant byte first (big endian)
+    // - -1 for least significant first (little endian)
+    int8_t array_endian;
+} PyUnstable_LongLayout;
+
+
+const PyUnstable_LongLayout PyUnstable_Long_LAYOUT = {
+    .bits_per_digit = PyLong_SHIFT,
+    .word_endian = PY_LITTLE_ENDIAN ? -1 : 1,
+    .array_endian = -1,  // least significant first
+    .digit_size = sizeof(digit),
+};
+
+
+typedef struct PyUnstable_Long_DigitArray {
+    PyLongObject *obj;
+    int negative;
+    size_t ndigits;
+    Py_digit *digits;
+} PyUnstable_Long_DigitArray;
+
+
+#if PY_VERSION_HEX >= 0x030C0000
+#  define TAG_FROM_SIGN_AND_SIZE(is_neg, size) ((is_neg?2:(size==0)) | (((size_t)size) << 3))
+#  define _PyLong_SetSignAndDigitCount(obj, is_neg, size) (obj->long_value.lv_tag = TAG_FROM_SIGN_AND_SIZE(is_neg, size))
+#elif PY_VERSION_HEX >= 0x030900A4
+#  define _PyLong_SetSignAndDigitCount(obj, is_neg, size) (Py_SET_SIZE(obj, (is_neg?-1:1)*size))
+#else
+#  define _PyLong_SetSignAndDigitCount(obj, is_neg, size) (Py_SIZE(obj) = (is_neg?-1:1)*size)
+#endif
+
+#if PY_VERSION_HEX >= 0x030C0000
+#  define GET_OB_DIGIT(obj) ((PyLongObject*)obj)->long_value.ob_digit
+#  define _PyLong_DigitCount(obj) (((PyLongObject*)obj)->long_value.lv_tag >> 3)
+#else
+#  define GET_OB_DIGIT(obj) obj->ob_digit
+#  define _PyLong_DigitCount(obj) (_PyLong_Sign(obj)<0 ? -Py_SIZE(obj):Py_SIZE(obj))
+#endif
+
+
+PyLongObject *
+_PyLong_FromDigits(int negative, Py_ssize_t digit_count, digit *digits)
+{
+    if (digit_count <= 1) {
+        return (PyLongObject *)PyLong_FromLong((negative?-1:1)*digits[0]);
+    }
+    PyLongObject *result = _PyLong_New(digit_count);
+    if (result == NULL) {
+        PyErr_NoMemory();
+        return NULL;
+    }
+    _PyLong_SetSignAndDigitCount(result, negative?-1:1, digit_count);
+    memcpy(GET_OB_DIGIT(result), digits, digit_count * sizeof(digit));
+    return result;
+}
+
+
+PyObject*
+PyUnstable_Long_Import(int negative, size_t ndigits, Py_digit *digits)
+{
+    return (PyObject*)_PyLong_FromDigits(negative, ndigits, digits);
+}
+
+
+int
+PyUnstable_Long_Export(PyObject *obj, PyUnstable_Long_DigitArray *array)
+{
+    if (!PyLong_Check(obj)) {
+        PyErr_Format(PyExc_TypeError, "expect int, got %T", obj);
+        return -1;
+    }
+    PyLongObject *self = (PyLongObject*)obj;
+
+    array->obj = (PyLongObject*)Py_NewRef(obj);
+    array->negative = (_PyLong_Sign((PyObject*)self) < 0);
+    array->ndigits = _PyLong_DigitCount(self);
+    if (array->ndigits == 0) {
+        array->ndigits = 1;
+    }
+    array->digits = GET_OB_DIGIT(self);
+    return 0;
+}
+
+
+void
+PyUnstable_Long_ReleaseExport(PyUnstable_Long_DigitArray *array)
+{
+    Py_CLEAR(array->obj);
+    array->negative = 0;
+    array->ndigits = 0;
+    array->digits = NULL;
+}
+#endif
+
 
 #ifdef __cplusplus
 }
