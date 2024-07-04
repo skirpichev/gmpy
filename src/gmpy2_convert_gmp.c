@@ -34,38 +34,39 @@
  * some basic types such as C longs or doubles.
  */
 
+#include "pythoncapi_compat.h"
+
 /* ======================================================================== *
  * Conversion between native Python objects and MPZ.                        *
  * ======================================================================== */
+
+#define PyLong_Export PyUnstable_Long_Export
+#define PyLong_ReleaseExport PyUnstable_Long_ReleaseExport
+#define PyLong_Import PyUnstable_Long_Import
+#define PyLong_LAYOUT PyUnstable_Long_LAYOUT
 
 /* To support creation of temporary mpz objects. */
 static void
 mpz_set_PyLong(mpz_t z, PyObject *obj)
 {
-    int negative;
-    Py_ssize_t len;
-    PyLongObject *templong = (PyLongObject*)obj;
+    PyUnstable_LongExport layout;
 
-    len = _PyLong_DigitCount(obj);
-    negative = _PyLong_Sign(obj) < 0;
-
-    switch (len) {
-    case 1:
-        mpz_set_si(z, (sdigit)GET_OB_DIGIT(templong)[0]);
-        break;
-    case 0:
-        mpz_set_si(z, 0);
-        break;
-    default:
-        mpz_import(z, len, -1, sizeof(digit), 0,
-                   sizeof(digit)*8 - PyLong_SHIFT,
-                   GET_OB_DIGIT(templong));
+    PyLong_Export(obj, &layout);
+    if (layout.ndigits == 1) {
+        mpz_set_si(z, layout.digits[0]);
     }
-
-    if (negative) {
+    else {
+        mpz_import(z, layout.ndigits,
+                   PyLong_LAYOUT.array_endian ? 1:-1,
+                   PyLong_LAYOUT.digit_size,
+                   PyLong_LAYOUT.word_endian ? -1:1,
+                   PyLong_LAYOUT.digit_size*8 - PyLong_LAYOUT.bits_per_digit,
+                   layout.digits);
+    }
+    if (layout.negative) {
         mpz_neg(z, z);
     }
-    return;
+    PyLong_ReleaseExport(&layout);
 }
 
 static MPZ_Object *
@@ -132,27 +133,21 @@ GMPy_PyLong_From_MPZ(MPZ_Object *obj, CTXT_Object *context)
         return PyLong_FromLong(mpz_get_si(obj->z));
     }
 
-    /* Assume gmp uses limbs as least as large as the builtin longs do */
+    size_t size = (mpz_sizeinbase(obj->z, 2) +
+                   PyLong_LAYOUT.bits_per_digit - 1) / PyLong_LAYOUT.bits_per_digit;
+    Py_digit *digits = PyMem_Malloc(PyLong_LAYOUT.digit_size*size);
 
-    size_t count, size = (mpz_sizeinbase(obj->z, 2) +
-                          PyLong_SHIFT - 1) / PyLong_SHIFT;
-    PyLongObject *result;
+    mpz_export(digits, NULL,
+               PyLong_LAYOUT.array_endian ? 1:-1,
+               PyLong_LAYOUT.digit_size,
+               PyLong_LAYOUT.word_endian ? -1:1,
+               PyLong_LAYOUT.digit_size*8 - PyLong_LAYOUT.bits_per_digit,
+               obj->z);
 
-    if (!(result = _PyLong_New(size))) {
-        /* LCOV_EXCL_START */
-        return NULL;
-        /* LCOV_EXCL_STOP */
-    }
+    PyObject *result = PyLong_Import(mpz_sgn(obj->z) < 0, size, digits);
+    PyMem_Free(digits);
 
-    mpz_export(GET_OB_DIGIT(result), &count, -1, sizeof(digit), 0,
-               sizeof(digit)*8 - PyLong_SHIFT, obj->z);
-
-    for (size_t i = count; i < size; i++) {
-        GET_OB_DIGIT(result)[i] = 0;
-    }
-    _PyLong_SetSignAndDigitCount(result, mpz_sgn(obj->z) < 0, count);
-
-    return (PyObject*)result;
+    return result;
 }
 
 static PyObject *
