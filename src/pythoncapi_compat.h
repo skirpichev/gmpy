@@ -1276,7 +1276,7 @@ PyUnstable_Long_Import(int negative, size_t ndigits, Py_digit *digits)
         PyErr_NoMemory();
         return NULL;
     }
-    _PyLong_SetSignAndDigitCount(result, negative?-1:1, ndigits);
+    _PyLong_SetSignAndDigitCount(result, negative, ndigits);
     memcpy(GET_OB_DIGIT(result), digits, ndigits * sizeof(digit));
     return (PyObject*)result;
 }
