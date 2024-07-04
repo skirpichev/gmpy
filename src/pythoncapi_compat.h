@@ -1261,11 +1261,11 @@ typedef struct PyUnstable_Long_DigitArray {
 #  define _PyLong_DigitCount(obj) (((PyLongObject*)obj)->long_value.lv_tag >> 3)
 #else
 #  define GET_OB_DIGIT(obj) obj->ob_digit
-#  define _PyLong_DigitCount(obj) (_PyLong_Sign(obj)<0 ? -Py_SIZE(obj):Py_SIZE(obj))
+#  define _PyLong_DigitCount(obj) (_PyLong_Sign((PyLongObject*)obj)<0 ? -Py_SIZE(obj):Py_SIZE(obj))
 #endif
 
 
-PyLongObject *
+static inline PyLongObject *
 _PyLong_FromDigits(int negative, Py_ssize_t digit_count, digit *digits)
 {
     if (digit_count <= 1) {
@@ -1282,14 +1282,14 @@ _PyLong_FromDigits(int negative, Py_ssize_t digit_count, digit *digits)
 }
 
 
-PyObject*
+static inline PyObject*
 PyUnstable_Long_Import(int negative, size_t ndigits, Py_digit *digits)
 {
     return (PyObject*)_PyLong_FromDigits(negative, ndigits, digits);
 }
 
 
-int
+static inline int
 PyUnstable_Long_Export(PyObject *obj, PyUnstable_Long_DigitArray *array)
 {
     if (!PyLong_Check(obj)) {
@@ -1309,7 +1309,7 @@ PyUnstable_Long_Export(PyObject *obj, PyUnstable_Long_DigitArray *array)
 }
 
 
-void
+static inline void
 PyUnstable_Long_ReleaseExport(PyUnstable_Long_DigitArray *array)
 {
     Py_CLEAR(array->obj);
