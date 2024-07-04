@@ -1252,9 +1252,9 @@ typedef struct PyLong_DigitArray {
 #  define TAG_FROM_SIGN_AND_SIZE(sign, size) ((1 - (sign)) | ((size) << NON_SIZE_BITS))
 #  define _PyLong_SetSignAndDigitCount(obj, sign, size) (obj->long_value.lv_tag = TAG_FROM_SIGN_AND_SIZE(sign, size))
 #elif PY_VERSION_HEX >= 0x030900A4
-#  define _PyLong_SetSignAndDigitCount(obj, sign, size) (Py_SET_SIZE(obj, sign*size))
+#  define _PyLong_SetSignAndDigitCount(obj, sign, size) (Py_SET_SIZE(obj, (sign)*(size)))
 #else
-#  define _PyLong_SetSignAndDigitCount(obj, sign, size) (Py_SIZE(obj) = sign*size)
+#  define _PyLong_SetSignAndDigitCount(obj, sign, size) (Py_SIZE(obj) = (sign)*(size))
 #endif
 
 #if PY_VERSION_HEX >= 0x030C0000
@@ -1277,7 +1277,7 @@ PyLong_Import(int negative, size_t ndigits, Py_digit *digits)
         PyErr_NoMemory();
         return NULL;
     }
-    _PyLong_SetSignAndDigitCount(result, negative?-1:1, ndigits);
+    _PyLong_SetSignAndDigitCount(result, negative?-1:1, (Py_ssize_t)ndigits);
     memcpy(GET_OB_DIGIT(result), digits, ndigits * sizeof(digit));
     return (PyObject*)result;
 }
