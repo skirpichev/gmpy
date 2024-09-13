@@ -7,6 +7,7 @@ Changes in gmpy2 2.2.2
 ----------------------
 
 * Fix memory leak for mpfr/mpc cache, see issue 511.
+* Fix memory leak in GMPy_CTXT_Exit(), see issue 515.
 
 Changes in gmpy2 2.2.1
 ----------------------
