@@ -9,6 +9,8 @@ Version 2.2
 gmpy2 2.2.2
 -----------
 
+* Fix memory leak for mpfr/mpc cache, see issue 511.
+
 gmpy2 2.2.1
 -----------
 

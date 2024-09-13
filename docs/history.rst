@@ -6,6 +6,8 @@ Release Notes
 Changes in gmpy2 2.2.2
 ----------------------
 
+* Fix memory leak for mpfr/mpc cache, see issue 511.
+
 Changes in gmpy2 2.2.1
 ----------------------
 
