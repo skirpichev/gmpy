@@ -11,7 +11,7 @@ Changes in gmpy2 2.2.2
 * Restore 'm' in library list, see issue 538.
 * Adjust to_bytes() behavior to match CPython.
 * Provide wheels for CPython v3.14.
-* Provide wheels for Linux ARM.
+* Provide wheels for Linux and Windows ARM64.
 
 Changes in gmpy2 2.2.1
 ----------------------
