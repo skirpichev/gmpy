@@ -17,7 +17,7 @@ jobs:
             msystem: clangarm64
             menv: clang-aarch64
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: msys2/setup-msys2@v2
         name: Setup msys2
         with:
