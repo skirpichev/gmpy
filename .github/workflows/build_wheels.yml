@@ -1,6 +1,6 @@
 name: Build Wheels
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch, workflow_call]
 
 jobs:
   build_wheels:
@@ -44,6 +44,6 @@ jobs:
       - name: Merge Wheels
         uses: actions/upload-artifact/merge@v5
         with:
-          name: wheels
+          name: gmpy2-wheels
           pattern: wheels-*
           delete-merged: true
