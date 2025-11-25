@@ -6,6 +6,9 @@ gmpy2 adds support for correctly rounded multiple-precision real arithmetic
 Version 2.2
 -----------
 
+gmpy2 2.2.2
+-----------
+
 gmpy2 2.2.1
 -----------
 

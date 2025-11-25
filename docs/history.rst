@@ -3,6 +3,9 @@ Release Notes
 
 .. currentmodule:: gmpy2
 
+Changes in gmpy2 2.2.2
+----------------------
+
 Changes in gmpy2 2.2.1
 ----------------------
 
