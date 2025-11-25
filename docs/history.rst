@@ -10,6 +10,7 @@ Changes in gmpy2 2.2.2
 * Fix memory leak in GMPy_CTXT_Exit(), see issue 515.
 * Restore 'm' in library list, see issue 538.
 * Adjust to_bytes() behavior to match CPython.
+* Provide wheels for CPython v3.14.
 
 Changes in gmpy2 2.2.1
 ----------------------
