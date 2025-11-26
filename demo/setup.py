@@ -32,7 +32,7 @@ setup (name = "gmpy2_demo",
        author = "Case Van Horsen",
        maintainer = "Case Van Horsen",
        maintainer_email = "casevh@gmail.com",
-       url = "https://github.com/aleaxit/gmpy",
+       url = "https://github.com/gmpy2/gmpy2",
 
        ext_modules = gmpy_ext
 )
