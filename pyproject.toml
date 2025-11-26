@@ -42,7 +42,7 @@ docs = ['sphinx>=4', 'sphinx-rtd-theme>=1']
 tests = ['pytest', 'hypothesis', 'cython', 'mpmath', 'setuptools']
 
 [project.urls]
-Homepage = 'https://github.com/aleaxit/gmpy'
+Homepage = 'https://github.com/gmpy2/gmpy2'
 
 [tool.setuptools]
 zip-safe = false
