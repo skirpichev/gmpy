@@ -522,7 +522,7 @@ static PyMethodDef Pygmpy_methods [] =
     { NULL, NULL, 1}
 };
 
-static char _gmpy_docs[] = GMPY_VERSION
+static char _gmpy_docs[] = "gmpy2 " GMPY_VERSION
 " - General Multiple-precision arithmetic for Python\n"
 "\n"
 "gmpy2 supports several multiple-precision libraries. Integer and\n"
