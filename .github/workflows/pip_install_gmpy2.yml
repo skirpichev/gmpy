@@ -7,12 +7,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.11, 3.12, 3.13]
-        os: [macos-12]
+        python-version: [3.13, 3.14]
+        os: [macos-15, macos-15-intel]
     runs-on: ${{ matrix.os }}
+    env:
+      CFLAGS: -I/opt/homebrew/include
+      LDFLAGS: -L/opt/homebrew/lib
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
@@ -26,21 +29,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.8, 3.11]
+        python-version: [3.9, 3.11, 3.12, 3.13, 3.14]
         os: [ubuntu-22.04]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
       - name: Install Libs
         run: |
           sudo apt-get update
           sudo apt-get install libmpc-dev texlive texlive-latex-extra latexmk lcov
       - name: Install dependencies
         run: |
-          pip install --upgrade pip
+          pip install --upgrade pip 'setuptools<80'
           pip --verbose install --editable .[docs,tests]
       - name: Tests
         run: |
@@ -63,16 +67,8 @@ jobs:
           PYTHONPATH=`pwd`/gmpy2 python test_cython/runtests.py
           lcov --capture --directory . --no-external --output-file build/coverage.info
           genhtml build/coverage.info --output-directory build/coverage
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          gcov: true
-          gcov_include: src/*.c
-          gcov_args: --no-external
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Archive build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: matrix.python-version == 3.11
         with:
           path: |
@@ -85,13 +81,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: [windows-2022]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: msys2/setup-msys2@v2
         name: Setup msys2
         with:
@@ -103,7 +99,11 @@ jobs:
             mpc-devel
             python-setuptools
             python-pip
-      - run: pip install --upgrade pip
-      - run: pip --verbose install -e .[tests]
-      - run: pytest test/
-      - run: PYTHONPATH=`pwd`/gmpy2 python test_cython/runtests.py
+      - name: Build and run tests in venv
+        run: |
+          python -m venv .test-venv
+          source .test-venv/bin/activate
+          pip install --upgrade pip
+          pip --verbose install -e .[tests]
+          pytest test/
+          PYTHONPATH=`pwd`/gmpy2 python test_cython/runtests.py

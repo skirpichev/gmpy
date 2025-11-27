@@ -6,6 +6,16 @@ gmpy2 adds support for correctly rounded multiple-precision real arithmetic
 Version 2.2
 -----------
 
+gmpy2 2.2.2
+-----------
+
+* Fix memory leak for mpfr/mpc cache, see issue 511.
+* Fix memory leak in GMPy_CTXT_Exit(), see issue 515.
+* Restore 'm' in library list, see issue 538.
+* Adjust to_bytes() behavior to match CPython.
+* Provide wheels for CPython v3.14.
+* Provide wheels for Linux and Windows ARM64.
+
 gmpy2 2.2.1
 -----------
 
