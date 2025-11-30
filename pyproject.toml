@@ -65,8 +65,7 @@ xfail_strict = true
 [tool.cibuildwheel]
 build-frontend = {name="build", args=["--verbose"]}
 enable = "pypy cpython-prerelease cpython-freethreading"
-skip = """*-win32 *-manylinux_i686 *-musllinux_* \
-          *-manylinux_armv7l pp*aarch64*"""
+skip = """*-manylinux_armv7l """
 before-all = "bash scripts/cibw_before_all.sh"
 test-extras = "tests"
 test-command = """pytest {package}/test && \
@@ -79,7 +78,11 @@ LD_LIBRARY_PATH = "$(pwd)/.local/lib:$LD_LIBRARY_PATH"
 PKG_CONFIG_PATH = "$(pwd)/.local/lib/pkgconfig"
 PYTEST_ADDOPTS = "--verbose"
 
+[tools.cibuildwheel.linux]
+archs = "auto64 auto32"
+
 [tool.cibuildwheel.windows]
+archs = "auto64"
 before-all = "msys2 -c scripts/cibw_before_all.sh"
 before-build = "pip install wheel delvewheel"
 repair-wheel-command = """scripts\\cibw_repair_wheel_command_windows.bat \
