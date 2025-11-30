@@ -14,15 +14,6 @@ Version 2.3 (development)
 * Fix round(mpz, ndigits) if ndigits is negative.
 * Improved support for mixed `mpfr` and `mpc` arithmetic.
 
-gmpy2 2.2.1
------------
-
-* Bug fix: use C int instead of C char for some internal code.
-* Bug fix: add xmpz.bit_count method.
-
-gmpy2 2.2.0
------------
-
 gmpy2 2.2.2
 -----------
 
@@ -36,7 +27,7 @@ gmpy2 2.2.2
 gmpy2 2.2.1
 -----------
 
-* Bug fix: use C int instead of C char for some internal code. Issue
+* Bug fix: use C int instead of C char for some internal code.
 * Bug fix: add xmpz.bit_count method.
 
 gmpy2 2.2.0
