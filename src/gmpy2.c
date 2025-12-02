@@ -944,11 +944,7 @@ static PyModuleDef_Slot Pygmpy_slots[] = {
      Py_MOD_MULTIPLE_INTERPRETERS_NOT_SUPPORTED},
 #  endif
 #  if PY_VERSION_HEX >= 0x030D0000
-#    ifdef MPFR_USE_THREAD_SAFE
-    {Py_mod_gil, Py_MOD_GIL_NOT_USED},
-#    else
     {Py_mod_gil, Py_MOD_GIL_USED},
-#    endif
 #  endif
     {0, NULL}
 };
@@ -969,5 +965,15 @@ static struct PyModuleDef gmpy_module = {
 
 PyMODINIT_FUNC PyInit_gmpy2(void)
 {
+#if PY_VERSION_HEX >= 0x030D0000
+    if (mpfr_buildopt_tls_p()) {
+        for (PyModuleDef_Slot *slot = Pygmpy_slots; slot->slot; slot++) {
+            if (slot->slot == Py_mod_gil) {
+                slot->value = Py_MOD_GIL_NOT_USED;
+                break;
+            }
+        }
+    }
+#endif
     return PyModuleDef_Init(&gmpy_module);
 }
