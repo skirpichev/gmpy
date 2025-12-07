@@ -107,7 +107,7 @@
 
 /* The following global strings are used by gmpy_misc.c. */
 
-#define GMPY_VERSION "2.3.0a2"
+#define GMPY_VERSION "2.3.0a3"
 
 char gmpy_version[] = GMPY_VERSION;
 
