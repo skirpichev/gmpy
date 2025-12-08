@@ -24,12 +24,6 @@
  * License along with GMPY2; if not, see <http://www.gnu.org/licenses/>    *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
- /* Todo list
-  * ---------
-  * Should a read-only (or template) context prevent the setting of
-  *    exception flags?
-  */
-
 /*
  * originally written for GMP-2.0 (by AMK...?)
  * Rewritten by Niels Möller, May 1996
