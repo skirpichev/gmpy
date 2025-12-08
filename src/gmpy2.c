@@ -26,9 +26,6 @@
 
  /* Todo list
   * ---------
-  * All MPFR and MPC functions need to set exponent range on entry. The
-  *    current approach where only set_context() and context.__enter__ set
-  *    the exponent range fails for context methods.
   * Should a read-only (or template) context prevent the setting of
   *    exception flags?
   */
