@@ -21,8 +21,3 @@ MPFR related functions
   flag.
 
 * Check behavior of mpfr_set_exp.
-
-Improve Test Suite and Documentation
-====================================
-
-More testing needs to be done.
