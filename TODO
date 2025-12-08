@@ -11,8 +11,6 @@ Functions to add/verify
 MPFR related functions
 ----------------------
 
-* Add mpfr_erandom function.
-
 * Add  mpfr_fmodquo function.
 
 * Add mpfr_rint_roundeven and mpfr_roudneven functions.
