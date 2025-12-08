@@ -92,10 +92,6 @@
 
 /* The following global strings are used by gmpy_misc.c. */
 
-#define GMPY_VERSION "2.3.0a3"
-
-char gmpy_version[] = GMPY_VERSION;
-
 char gmpy_license[] = "\
 The GMPY2 source code is licensed under LGPL 3 or later. The supported \
 versions of the GMP, MPFR, and MPC libraries are also licensed under \
@@ -499,8 +495,8 @@ static PyMethodDef Pygmpy_methods [] =
     { NULL, NULL, 1}
 };
 
-static char _gmpy_docs[] = "gmpy2 " GMPY_VERSION
-" - General Multiple-precision arithmetic for Python\n"
+static char _gmpy_docs[] =
+"gmpy2 - General Multiple-precision arithmetic for Python\n"
 "\n"
 "gmpy2 supports several multiple-precision libraries. Integer and\n"
 "rational arithmetic is provided by the GMP library. Real floating-\n"
@@ -751,11 +747,23 @@ gmpy_exec(PyObject *gmpy_module)
         return -1;;
         /* LCOV_EXCL_STOP */
     }
-    if (PyModule_AddStringConstant(gmpy_module, "__version__", gmpy_version) < 0) {
-        /* LCOV_EXCL_START */
-        return -1;
-        /* LCOV_EXCL_STOP */
+
+    const char *str = ("import numbers, importlib.metadata as imp\n"
+                       "gmpy2.__version__ = imp.version('gmpy2')\n");
+    PyObject *ns = PyDict_New();
+
+    if (!ns) {
+        return -1; /* LCOV_EXCL_LINE */
     }
+    PyDict_SetItemString(ns, "gmpy2", gmpy_module);
+
+    PyObject *res = PyRun_String(str, Py_file_input, ns, ns);
+
+    Py_DECREF(ns);
+    if (!res) {
+        return -1; /* LCOV_EXCL_LINE */
+    }
+    Py_DECREF(res);
 
     /* Add the exceptions. */
     Py_INCREF(GMPyExc_DivZero);
