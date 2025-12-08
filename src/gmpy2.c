@@ -32,8 +32,6 @@
   *    the exponent range fails for context methods.
   * Should a read-only (or template) context prevent the setting of
   *    exception flags?
-  * Add context option to control the result of integer division:
-  *    integer (mpz), exact (mpq), or true (mpfr).
   * Add modular arithmetic functions.
   * Implement Chinese Remainder Theorem.
   * Update PRP code.
