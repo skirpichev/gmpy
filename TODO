@@ -13,5 +13,3 @@ MPFR related functions
 
 * Check behavior of mpfr_get_str for NaN input and the setting of the inexact
   flag.
-
-* Check behavior of mpfr_set_exp.
