@@ -11,7 +11,7 @@ Functions to add/verify
 MPFR related functions
 ----------------------
 
-* Add mpfr_erandom and  mpfr_nrandom functions.
+* Add mpfr_erandom function.
 
 * Add  mpfr_fmodquo function.
 
@@ -20,28 +20,9 @@ MPFR related functions
 * Check behavior of mpfr_get_str for NaN input and the setting of the inexact
   flag.
 
-* Check behavior of mpfr_set_exp. 
-
-MPC related functions
----------------------
-
-* Add mpc_cmp and mpc_cmp_abs functions.
-
-* Add mpc_rootofunity function.
+* Check behavior of mpfr_set_exp.
 
 Improve Test Suite and Documentation
 ====================================
 
 More testing needs to be done.
-
-Internal Cleanup
-================
-
-The following internal changes should be done but will occur after the 2.1.0
-release.
-
-* Support the modern Python 3.2+ Unicode functions.
-
-* Support new thread local storage functions.
-
-* Support proper module initialization (??).
