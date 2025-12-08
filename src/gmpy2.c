@@ -32,7 +32,6 @@
   *    the exponent range fails for context methods.
   * Should a read-only (or template) context prevent the setting of
   *    exception flags?
-  * Implement Chinese Remainder Theorem.
   * Update PRP code.
   */
 
