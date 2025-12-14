@@ -3,12 +3,11 @@ name: pip_install_gmpy2
 on: [push, pull_request]
 
 jobs:
-  linux:
+  coverage:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.9, 3.11, pypy3.11, 3.12, 3.13, 3.13t,
-                         3.14, 3.14t]
+        python-version: [pypy3.11, "3.x"]
         os: [ubuntu-22.04]
     runs-on: ${{ matrix.os }}
     steps:
@@ -17,10 +16,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           allow-prereleases: true
-      - name: Install Libs
-        run: |
-          sudo apt-get update
-          sudo apt-get install libmpc-dev lcov
+      - run: sudo apt-get update
+      - run: sudo apt-get install libmpc-dev lcov
       - name: Install dependencies
         run: |
           pip install --upgrade pip 'setuptools<80'
@@ -37,11 +34,35 @@ jobs:
           CFLAGS="-coverage" python setup.py develop
           pytest test/
           PYTHONPATH=`pwd`/gmpy2 python test_cython/runtests.py
-          lcov --capture --directory . --no-external --output-file build/coverage.info
-          genhtml build/coverage.info --output-directory build/coverage
-      - name: Archive build artifacts
-        uses: actions/upload-artifact@v5
-        if: matrix.python-version == 3.11
+          lcov --capture --directory . --no-external --output-file coverage.info
+          cp coverage.info build/coverage-${{ matrix.python-version }}.info
+      - uses: actions/upload-artifact@v5
         with:
+          name: coverage-${{ matrix.python-version }}
+          path: |
+            build/coverage-${{ matrix.python-version }}.info
+          retention-days: 1
+  merge-coverage:
+    runs-on: ubuntu-24.04
+    needs:
+      - coverage
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - run: sudo apt-get update
+      - run: sudo apt-get install lcov
+      - uses: actions/download-artifact@v6
+        with:
+          pattern: coverage-*
+          path: build/
+          merge-multiple: true
+      - run: |
+          genhtml build/coverage*.info --hierarchical \
+            --output-directory build/coverage
+      - uses: actions/upload-artifact@v5
+        with:
+          name: coverage
           path: |
             build/coverage/
+            build/coverage*.info
