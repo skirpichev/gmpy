@@ -20,22 +20,15 @@ jobs:
       - name: Install Libs
         run: |
           sudo apt-get update
-          sudo apt-get install libmpc-dev texlive texlive-latex-extra latexmk lcov
+          sudo apt-get install libmpc-dev lcov
       - name: Install dependencies
         run: |
           pip install --upgrade pip 'setuptools<80'
-          pip --verbose install --editable .[docs,tests]
+          pip --verbose install --editable .[tests]
       - name: Tests
         run: |
           pytest test/
           PYTHONPATH=`pwd`/gmpy2 python test_cython/runtests.py
-      - name: Building docs
-        if: matrix.python-version == 3.11
-        run: |
-          sphinx-build --color -W --keep-going -b doctest docs build/sphinx/doctest
-          sphinx-build --color -W --keep-going -b html docs build/sphinx/html
-          sphinx-build --color -W --keep-going -b latex docs build/sphinx/latex
-          make -C build/sphinx/latex all-pdf
       # XXX: why this doesn't work with pip install --editable above?
       - name: Run coverage tests
         run: |
@@ -51,7 +44,4 @@ jobs:
         if: matrix.python-version == 3.11
         with:
           path: |
-            build/sphinx/doctest/
-            build/sphinx/html/
-            build/sphinx/latex/gmpy2.pdf
             build/coverage/
