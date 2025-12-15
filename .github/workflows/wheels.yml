@@ -18,6 +18,8 @@ jobs:
             menv: clang-aarch64
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - uses: msys2/setup-msys2@v2
         name: Setup msys2
         with:
