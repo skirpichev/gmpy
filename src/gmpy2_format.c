@@ -26,26 +26,10 @@
 
 PyDoc_STRVAR(GMPy_doc_mpz_format,
 "x.__format__(fmt) -> str\n\n"
-"Return a Python string by formatting `mpz` 'x' using the format string\n"
-"'fmt'. A valid format string consists of:\n\n"
-"     optional alignment code:\n\n"
-"        '<' -> left shifted in field\n"
-"        '>' -> right shifted in field\n"
-"        '^' -> centered in field\n\n"
-"     optional leading sign code:\n\n"
-"        '+' -> always display leading sign\n"
-"        '-' -> only display minus sign\n"
-"        ' ' -> minus for negative values, space for positive values\n\n"
-"     optional base indicator\n\n"
-"        '#' -> precede binary, octal, or hex with 0b, 0o or 0x\n\n"
-"     optional width\n\n"
-"     optional conversion code:\n\n"
-"        'd' -> decimal format\n"
-"        'b' -> binary format\n"
-"        'o' -> octal format\n"
-"        'x' -> hex format\n"
-"        'X' -> upper-case hex format\n\n"
-"The default format is 'd'.");
+"Return a Python string by formatting 'x' using the format string 'fmt'.\n\n"
+"Same as for built-in `int`'s, except that for floating-point\n"
+"format types, `mpfr` is used to convert the integer to a floating-point\n"
+"number before formatting.");
 
 /* Formatting occurs in two phases. Pympz_ascii() is used to create a string
  * with the appropriate binary/octal/decimal/hex formatting, including the
